@@ -23,6 +23,18 @@ function adicionarTarefa(texto) {
   renderizarTarefas();
 }
 
+// Procura a tarefa pelo id e inverte o valor de "concluida" (true <-> false).
+function alternarConclusao(id) {
+  // find() percorre o array e retorna o primeiro item que bate com a condição
+  // (aqui, o item cujo id é igual ao que recebemos).
+  const tarefa = tarefas.find(function (t) {
+    return t.id === id;
+  });
+
+  tarefa.concluida = !tarefa.concluida; // "!" inverte o booleano
+  renderizarTarefas();
+}
+
 // Percorre o array "tarefas" e desenha cada uma como um <li> na tela.
 function renderizarTarefas() {
   // Limpa a lista antes de redesenhar, pra não duplicar itens.
@@ -31,7 +43,25 @@ function renderizarTarefas() {
   // forEach passa por cada tarefa do array, uma por uma.
   tarefas.forEach(function (tarefa) {
     const item = document.createElement('li');
-    item.textContent = tarefa.texto;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = tarefa.concluida;
+    checkbox.addEventListener('change', function () {
+      alternarConclusao(tarefa.id);
+    });
+
+    const texto = document.createElement('span');
+    texto.textContent = tarefa.texto;
+
+    item.appendChild(checkbox);
+    item.appendChild(texto);
+
+    // classe usada depois no CSS para mostrar visualmente que está concluída
+    if (tarefa.concluida) {
+      item.classList.add('concluida');
+    }
+
     listaTarefas.appendChild(item);
   });
 }
