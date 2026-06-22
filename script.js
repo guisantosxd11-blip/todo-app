@@ -4,12 +4,18 @@
 const inputTarefa = document.getElementById('input-tarefa');
 const botaoAdicionar = document.getElementById('botao-adicionar');
 const listaTarefas = document.getElementById('lista-tarefas');
+const botaoFiltroTodas = document.getElementById('filtro-todas');
+const botaoFiltroPendentes = document.getElementById('filtro-pendentes');
+const botaoFiltroConcluidas = document.getElementById('filtro-concluidas');
 
 // === Estado da aplicação ===
 // "let" porque esse array vai mudar (vamos adicionar tarefas nele).
 // Por enquanto ele só existe na memória: se recarregar a página, some.
 // (vamos resolver isso depois, com localStorage)
 let tarefas = [];
+
+// Qual filtro está selecionado agora: 'todas', 'pendentes' ou 'concluidas'.
+let filtroAtual = 'todas';
 
 // Cria uma nova tarefa e adiciona no array.
 function adicionarTarefa(texto) {
@@ -46,13 +52,31 @@ function removerTarefa(id) {
   renderizarTarefas();
 }
 
-// Percorre o array "tarefas" e desenha cada uma como um <li> na tela.
+// Retorna só as tarefas que devem aparecer, de acordo com o filtro atual.
+// Não muda o array "tarefas" original, só decide o que vai ser exibido.
+function obterTarefasFiltradas() {
+  if (filtroAtual === 'pendentes') {
+    return tarefas.filter(function (t) {
+      return !t.concluida;
+    });
+  }
+
+  if (filtroAtual === 'concluidas') {
+    return tarefas.filter(function (t) {
+      return t.concluida;
+    });
+  }
+
+  return tarefas; // filtroAtual === 'todas'
+}
+
+// Percorre as tarefas filtradas e desenha cada uma como um <li> na tela.
 function renderizarTarefas() {
   // Limpa a lista antes de redesenhar, pra não duplicar itens.
   listaTarefas.innerHTML = '';
 
-  // forEach passa por cada tarefa do array, uma por uma.
-  tarefas.forEach(function (tarefa) {
+  // forEach passa por cada tarefa filtrada, uma por uma.
+  obterTarefasFiltradas().forEach(function (tarefa) {
     const item = document.createElement('li');
 
     const checkbox = document.createElement('input');
@@ -95,4 +119,20 @@ botaoAdicionar.addEventListener('click', function () {
 
   adicionarTarefa(texto);
   inputTarefa.value = ''; // limpa o input depois de adicionar
+});
+
+// Cada botão de filtro só muda a variável filtroAtual e redesenha a lista.
+botaoFiltroTodas.addEventListener('click', function () {
+  filtroAtual = 'todas';
+  renderizarTarefas();
+});
+
+botaoFiltroPendentes.addEventListener('click', function () {
+  filtroAtual = 'pendentes';
+  renderizarTarefas();
+});
+
+botaoFiltroConcluidas.addEventListener('click', function () {
+  filtroAtual = 'concluidas';
+  renderizarTarefas();
 });
