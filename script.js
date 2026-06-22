@@ -35,6 +35,17 @@ function alternarConclusao(id) {
   renderizarTarefas();
 }
 
+// Remove a tarefa com o id informado.
+function removerTarefa(id) {
+  // filter() cria um NOVO array só com os itens que passam o teste.
+  // Aqui, mantemos todas as tarefas, exceto a que tem esse id.
+  tarefas = tarefas.filter(function (t) {
+    return t.id !== id;
+  });
+
+  renderizarTarefas();
+}
+
 // Percorre o array "tarefas" e desenha cada uma como um <li> na tela.
 function renderizarTarefas() {
   // Limpa a lista antes de redesenhar, pra não duplicar itens.
@@ -54,8 +65,15 @@ function renderizarTarefas() {
     const texto = document.createElement('span');
     texto.textContent = tarefa.texto;
 
+    const botaoExcluir = document.createElement('button');
+    botaoExcluir.textContent = 'Excluir';
+    botaoExcluir.addEventListener('click', function () {
+      removerTarefa(tarefa.id);
+    });
+
     item.appendChild(checkbox);
     item.appendChild(texto);
+    item.appendChild(botaoExcluir);
 
     // classe usada depois no CSS para mostrar visualmente que está concluída
     if (tarefa.concluida) {
