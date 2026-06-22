@@ -17,6 +17,26 @@ let tarefas = [];
 // Qual filtro está selecionado agora: 'todas', 'pendentes' ou 'concluidas'.
 let filtroAtual = 'todas';
 
+// Chave usada para guardar as tarefas no localStorage.
+const CHAVE_STORAGE = 'tarefas';
+
+// Guarda o array "tarefas" no localStorage.
+// localStorage só aceita texto, então usamos JSON.stringify para
+// transformar o array de objetos em uma string.
+function salvarTarefas() {
+  localStorage.setItem(CHAVE_STORAGE, JSON.stringify(tarefas));
+}
+
+// Lê o que está salvo no localStorage e transforma de volta em array.
+// JSON.parse faz o caminho inverso do JSON.stringify.
+function carregarTarefas() {
+  const tarefasSalvas = localStorage.getItem(CHAVE_STORAGE);
+
+  if (tarefasSalvas) {
+    tarefas = JSON.parse(tarefasSalvas);
+  }
+}
+
 // Cria uma nova tarefa e adiciona no array.
 function adicionarTarefa(texto) {
   const novaTarefa = {
@@ -26,6 +46,7 @@ function adicionarTarefa(texto) {
   };
 
   tarefas.push(novaTarefa); // push adiciona um item no final do array
+  salvarTarefas();
   renderizarTarefas();
 }
 
@@ -38,6 +59,7 @@ function alternarConclusao(id) {
   });
 
   tarefa.concluida = !tarefa.concluida; // "!" inverte o booleano
+  salvarTarefas();
   renderizarTarefas();
 }
 
@@ -49,6 +71,7 @@ function removerTarefa(id) {
     return t.id !== id;
   });
 
+  salvarTarefas();
   renderizarTarefas();
 }
 
@@ -136,3 +159,9 @@ botaoFiltroConcluidas.addEventListener('click', function () {
   filtroAtual = 'concluidas';
   renderizarTarefas();
 });
+
+// === Inicialização ===
+// Ao carregar a página, primeiro buscamos as tarefas salvas no localStorage
+// e só depois desenhamos a lista na tela.
+carregarTarefas();
+renderizarTarefas();
